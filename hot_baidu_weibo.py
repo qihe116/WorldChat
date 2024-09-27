@@ -12,8 +12,8 @@ from datetime import datetime
 
 # logger.add('hot.log')
 
-collection_baidu = pymongo.MongoClient("mongodb://192.168.230.128:27017/")['hot_news']['baidu']
-collection_weibo = pymongo.MongoClient("mongodb://192.168.230.128:27017/")['hot_news']['weibo']
+# collection_baidu = pymongo.MongoClient("mongodb://192.168.230.128:27017/")['hot_news']['baidu']
+# collection_weibo = pymongo.MongoClient("mongodb://192.168.230.128:27017/")['hot_news']['weibo']
 
 
 class DownNews:
@@ -29,18 +29,7 @@ class DownNews:
         req = request.Request(url=self.baidu_url, headers=self.headers)
         response = request.urlopen(req, timeout=2)
         content = response.read().decode('utf8')
-        # with open('data/test.html', 'w', encoding='utf8') as f:
-        #     f.write(content)
         soup = BeautifulSoup(content, 'lxml')
-        # div = soup.find_all('div', class_='s-hotsearch-wrapper')
-        # div = soup.find_all('div', class_='toplist1-tr_4kE4D')
-        # div = soup.find_all('div', class_='cr-offset ')
-        # print(div)
-        # for i in div:
-        #     div1 = i.find_all('div')
-        #     print(len(div1))
-        #     for j in div1:
-        #         div2 = j.find_all('div')
         a = soup.find_all('div')
         print(a)
         for i in a:
@@ -52,7 +41,6 @@ class DownNews:
         response = request.urlopen(req, timeout=2)
         content = response.read().decode('utf8')
         soup = BeautifulSoup(content, 'lxml')
-        # titles, hot_indices = [], []
         res_json = {'day': time.strftime("%Y%m%d", time.localtime(time.time())),
                     'time': time.strftime("%H:%M:%S", time.localtime(time.time()))}
         res_json_title = {'day': time.strftime("%Y%m%d", time.localtime(time.time())),
@@ -63,17 +51,9 @@ class DownNews:
             desc = item.find('div', {'class': 'hot-desc_1m_jR'})
             # img = item.find('div', {'class': 'index_1Ew5p'}).find('img')
             if title_tag and desc:
-                # if img:
-                #     img_url = img.get('src')
-                # else:
-                #     img_url = ''
-                # res_json.append(title_tag.text.strip())
-                # res_json[idx] = {'title': title_tag.text.strip(),
-                #                  'desc': desc.text.strip().replace('查看更多>', '')}
                 res_json['title_' + str(idx)] = title_tag.text.strip()
                 res_json_title['title_' + str(idx)] = title_tag.text.strip()
                 res_json['desc' + str(idx)] = desc.text.strip().replace('查看更多>', '')
-                # hot_indices.append(hot_index_tag.text.strip())
         return res_json, res_json_title
 
     # weibo热搜
@@ -130,10 +110,12 @@ class DownNews:
 
     def get_when_1h_v2(self):
         hot_baidu = self.baidu_hot_search_top()[0]
-        collection_baidu.insert_one(hot_baidu)
+        print(hot_baidu)
+        # collection_baidu.insert_one(hot_baidu)
 
         hot_weibo = self.weibo_hot_search()
-        collection_weibo.insert_one(hot_weibo)
+        # collection_weibo.insert_one(hot_weibo)
+        print(hot_weibo)
 
 
 
